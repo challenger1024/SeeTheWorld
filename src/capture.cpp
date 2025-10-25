@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main() {
-    cv::VideoCapture cap(0); // /dev/video0
+    cv::VideoCapture cap(1); // /dev/video0
     if(!cap.isOpened()) {
         std::cerr << "无法打开摄像头！" << std::endl;
         return -1;
