@@ -1,5 +1,6 @@
 #include"SeeTheWorld.h"
 #include <unistd.h>  // for usleep
+#include<iostream>
 
 void SeeTheWorld::run() {
     this->running = true;
