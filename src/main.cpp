@@ -10,6 +10,7 @@ void SeeTheWorld::run() {
 }
 
 int main(){
+    std::cout<<"按下空格拍照，Q键退出！"<<std::endl;
     SeeTheWorld stw;
     stw.run();
     return 0;
