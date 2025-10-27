@@ -22,7 +22,7 @@ public:
 
     // 拍照功能
     bool capture();
-    void send_message();
+    void send_image();
     // 语音反馈
     void speak(const std::string& text); // 统一语音播报接口
     void processInput();   // 键盘或GPIO触发
