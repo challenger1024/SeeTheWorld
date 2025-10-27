@@ -39,7 +39,6 @@ private:
     std::thread voiceThread;
     std::mutex mtx;
 
-    bool running;
 };
 
 #endif // STW_SEE_THE_WORLD_H
