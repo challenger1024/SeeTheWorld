@@ -12,8 +12,8 @@
 // SeeTheWorld 类：负责整合拍照、语音提示和触发逻辑
 class SeeTheWorld {
 public:
-    SeeTheWorld();
-    ~SeeTheWorld();
+    SeeTheWorld(){};
+    ~SeeTheWorld(){};
 
     bool init();
 
