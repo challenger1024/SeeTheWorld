@@ -53,6 +53,7 @@ void SeeTheWorld::processInput() {
             cout << "📸 拍照触发" << endl;
             if(this->capture()){
                 this->send_image();
+                return;
             }
             
         } else if (key == 'q' || key == 'Q') {
