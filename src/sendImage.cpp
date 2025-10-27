@@ -4,37 +4,44 @@
 #include <string>
 #include <cstdlib>
 #include <curl/curl.h>
-#include<cstring>
-#include"SeeTheWorld.h"
+#include <cstring>
+#include "SeeTheWorld.h"
 
-// 在response中筛选出AI的回答
+// 在 response 中筛选出 AI 的回答
 std::string extractAIResponse(const std::string& response) {
     // 查找 "content":" 的起始位置
     size_t start = response.find("\"content\":\"");
-    if (start == std::string::npos) return "未找到 AI 回复内容。";
+    if (start == std::string::npos)
+        return "未找到 AI 回复内容。";
 
     // 跳过关键字部分
     start += strlen("\"content\":\"");
 
     // 查找对应的结尾引号
     size_t end = response.find("\",", start);
-    if (end == std::string::npos) end = response.size();
+    if (end == std::string::npos)
+        end = response.size();
 
     // 截取字符串
     std::string content = response.substr(start, end - start);
 
-    // 处理转义符（如 \" -> "，\\n -> 换行）
+    // 处理转义符（如 \" -> "，\\n -> 换行），并过滤掉 '*'
     std::string clean;
     for (size_t i = 0; i < content.size(); ++i) {
         if (content[i] == '\\' && i + 1 < content.size()) {
             char next = content[i + 1];
-            if (next == 'n') { clean += '\n'; ++i; continue; }
-            if (next == 't') { clean += '\t'; ++i; continue; }
-            if (next == '"') { clean += '"'; ++i; continue; }
+            if (next == 'n')  { clean += '\n'; ++i; continue; }
+            if (next == 't')  { clean += '\t'; ++i; continue; }
+            if (next == '"')  { clean += '"'; ++i; continue; }
             if (next == '\\') { clean += '\\'; ++i; continue; }
         }
+        // ⭐ 新增：过滤星号
+        if (content[i] == '*')
+            continue;
+
         clean += content[i];
     }
+
     return clean;
 }
 
