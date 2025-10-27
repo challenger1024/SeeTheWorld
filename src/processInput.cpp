@@ -51,8 +51,8 @@ void SeeTheWorld::processInput() {
         char key = getch();
         if (key == ' ') { // 空格键拍照
             cout << "📸 拍照触发" << endl;
-            if(capture()){
-                send_image();
+            if(this->capture()){
+                this->send_image();
             }
             
         } else if (key == 'q' || key == 'Q') {
