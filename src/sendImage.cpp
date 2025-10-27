@@ -125,5 +125,4 @@ void send_image() {
         curl_easy_cleanup(curl);
     }
 
-    return 0;
 }
