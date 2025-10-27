@@ -118,7 +118,7 @@ void send_image() {
 //            std::cout << "Response:\n" << response << std::endl;
             std::string answer = extractAIResponse(response);
             std::cout << "\nAI的描述:\n" << answer << std::endl;
-            speak(answer);
+            this->speak(answer);
         }
 
         curl_slist_free_all(headers);
