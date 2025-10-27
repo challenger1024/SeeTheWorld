@@ -75,7 +75,7 @@ std::string readFileAsBase64(const std::string& path) {
     return ret;
 }
 
-void SeeTheWorld::send_image(){
+int SeeTheWorld::send_image(){
     // 从环境变量获取 API Key
     std::string api_key = std::getenv("ARK_API_KEY");
     if(api_key.empty()){
@@ -124,5 +124,5 @@ void SeeTheWorld::send_image(){
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
     }
-
+    return 0;
 }
