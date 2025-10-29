@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <string>
 #include"SeeTheWorld.h"
+#include"tts_ws_client.h"
 
 void SeeTheWorld::speak(const std::string& text) {
     // 指定使用 card 1, device 0（耳机输出）
