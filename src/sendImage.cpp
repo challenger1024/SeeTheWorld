@@ -98,7 +98,8 @@ int SeeTheWorld::send_image(){
     if(base64_image.empty()) return 1;
 
     // 构造 JSON 请求体
-    std::string json_data = "{ \"model\": \"doubao-seed-1-6-lite-251015\", "
+//    std::string json_data = "{ \"model\": \"doubao-seed-1-6-lite-251015\", "
+    std::string json_data = "{ \"model\": \"doubao-seed-1-6-vision-250815\", "
         "\"messages\": [ { \"role\": \"user\", \"content\": [ "
         "{ \"type\": \"image_url\", \"image_url\": { \"url\": \"data:image/jpeg;base64," + base64_image + "\" } }, "
         "{ \"type\": \"text\", \"text\": \"请描述图片中的内容\" } "
