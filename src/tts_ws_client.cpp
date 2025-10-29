@@ -193,7 +193,7 @@ struct WsParam {
     }
 };
 
-void tts_speak(const std::string &text) {
+int tts_speak(const std::string &text) {
     // ----- 请在这里填入你的凭证 -----
     WsParam wsParam;
 

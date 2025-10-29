@@ -2,4 +2,4 @@
 #pragma once
 #include <string>
 
-void tts_speak(const std::string &text);
+int tts_speak(const std::string &text);
