@@ -2,11 +2,13 @@
 #include <unistd.h>  // for usleep
 #include<iostream>
 
+
 void SeeTheWorld::run() {
     this->running = true;
     while (running) {
         this->processInput(); // 检测键盘
         usleep(100000); // 0.1 秒轮询
+        std::cout<<"按下空格键拍照，按下q退出程序！"<<std::endl;
     }
 }
 
