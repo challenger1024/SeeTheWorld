@@ -5,7 +5,7 @@
 
 bool  SeeTheWorld::capture() {
     cv::VideoCapture cap(0); // /dev/video0
-    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
+    setenv("OPENCV_LOG_LEVEL", "ERROR", 1);
 
     if(!cap.isOpened()) {
         std::cerr << "无法打开摄像头！" << std::endl;
