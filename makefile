@@ -1,19 +1,18 @@
 # 编译器
 CXX = g++
-# 编译选项
-CXXFLAGS = -std=c++11 -I/usr/include/opencv4 `pkg-config --cflags opencv4`
+CXXFLAGS = -std=c++17 -I/usr/include/opencv4 `pkg-config --cflags opencv4` \
+           -I/usr/include -I/usr/local/include
+
 # 链接选项
-LDFLAGS = `pkg-config --libs opencv4` -L/usr/lib/riscv64-linux-gnu -lcurl
+LDFLAGS = `pkg-config --libs opencv4` -L/usr/lib/riscv64-linux-gnu -lcurl -lssl -lcrypto -lboost_system -lboost_thread -lpthread
+
 # 源文件路径
 SRC_DIR = src
-# 目标文件路径
 OBJ_DIR = obj
-# 可执行文件名
 TARGET = see_the_world
 
 # 自动收集所有 .cpp 源文件
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-# 将 src/xxx.cpp 转换为 obj/xxx.o
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
 # 默认目标
