@@ -2,7 +2,7 @@
 #include <iostream>
 #include"SeeTheWorld.h"
 
-int main() {
+int SeeTheWorld::capture() {
 //    cv::VideoCapture cap(0, cv::CAP_ANY);  // 打开默认摄像头
 cv::VideoCapture cap(0, cv::CAP_V4L2);
 
