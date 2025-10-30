@@ -24,8 +24,8 @@ bool SeeTheWorld::capture() {
     cap.set(cv::CAP_PROP_EXPOSURE, -6);
 
     // 适当降低亮度和增益（这些值需要根据摄像头情况调试）
-    cap.set(cv::CAP_PROP_BRIGHTNESS, 0.3);
-    cap.set(cv::CAP_PROP_GAIN, 0.2);
+    cap.set(cv::CAP_PROP_BRIGHTNESS, 0.5);
+    cap.set(cv::CAP_PROP_GAIN, 0.5);
     cap.set(cv::CAP_PROP_CONTRAST, 0.5);
 
     // 等待相机稳定（有的摄像头需要几帧时间调整）
