@@ -16,6 +16,9 @@ int main(){
     std::cout<<"按下空格拍照，Q键退出！"<<std::endl;
     SeeTheWorld stw;
 //    stw.run();
-    stw.capture();
+
+    if(stw.capture()){
+        stw.send_image();
+    }
     return 0;
 }
