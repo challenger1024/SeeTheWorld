@@ -6,7 +6,8 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
-
+// 照片曝光度
+int EXPOSURE=50;
 // 前置声明（避免循环依赖）
 
 // SeeTheWorld 类：负责整合拍照、语音提示和触发逻辑

@@ -12,6 +12,7 @@ void SeeTheWorld::run() {
     }
 }
 
+/*
 int main(){
     std::cout<<"按下空格拍照，Q键退出！"<<std::endl;
     SeeTheWorld stw;
@@ -20,5 +21,30 @@ int main(){
     if(stw.capture()){
         stw.send_image();
     }
+    return 0;
+}
+*/
+
+int main(int argc, char* argv[]) {
+    std::cout << "按下空格拍照，Q键退出！" << std::endl;
+
+    // 检查是否传入参数 e
+    if (argc > 1) {
+        try {
+            int e = std::stoi(argv[1]);  // 转换字符串为整数
+            EXPOSURE = e;
+            std::cout << "曝光度已覆盖为：" << EXPOSURE << std::endl;
+        } catch (const std::exception& ex) {
+            std::cerr << "参数错误：" << ex.what() << "，应传入整数曝光值。" << std::endl;
+        }
+    }
+
+    SeeTheWorld stw;
+    stw.run();
+/*
+    if (stw.capture()) {
+        stw.send_image();
+    }
+*/
     return 0;
 }
