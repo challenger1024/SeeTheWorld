@@ -21,7 +21,7 @@ bool SeeTheWorld::capture() {
     cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 0.75);
 
     // 设置曝光值（负值代表短曝光，通常在 -5 到 -10 之间可用）
-    cap.set(cv::CAP_PROP_EXPOSURE, -6);
+    cap.set(cv::CAP_PROP_EXPOSURE, 0);
 
     // 适当降低亮度和增益（这些值需要根据摄像头情况调试）
     cap.set(cv::CAP_PROP_BRIGHTNESS, 0.5);
