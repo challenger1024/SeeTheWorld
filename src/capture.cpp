@@ -30,7 +30,7 @@ cv::VideoCapture cap(0, cv::CAP_V4L2);
     // 关闭自动曝光（注意：不同平台参数意义略有不同）
     // 在大多数 UVC 摄像头上：
     // 0.25 = 手动模式，0.75 = 自动模式
-    cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 3);
+    cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
 
     // 设置曝光值（负值代表短曝光，通常在 -5 到 -10 之间可用）
     cap.set(cv::CAP_PROP_EXPOSURE, EXPOSURE);
