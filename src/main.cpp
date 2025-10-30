@@ -2,7 +2,7 @@
 #include <unistd.h>  // for usleep
 #include<iostream>
 
-
+int EXPOSURE=50;
 void SeeTheWorld::run() {
     this->running = true;
     while (running) {
