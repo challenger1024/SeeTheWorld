@@ -65,6 +65,6 @@ cv::VideoCapture cap(0, cv::CAP_V4L2);
 
     cv::imwrite("image.jpg", frame);
     std::cout << "已保存图像 image.jpg" << std::endl;
-    this->send_image();
-    return 0;
+//    this->send_image();
+    return true;
 }
