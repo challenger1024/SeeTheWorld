@@ -27,6 +27,7 @@ make
 编译成功后会在当前目录下生成二进制可执行文件`see_the_world`  
 运行前请保证已经配置好所需的环境变量  
 使用`./see_the_world`运行它  
+使用`./see_the_world [integer]`，设置曝光度，目前是50，integer是一个整数
 使用`make clean`清理编译生成的中间文件和最终可执行文件 ，让工程恢复到“干净状态。
 ## 环境变量配置
 修改setENV.sh中的内容，替换为你的配置  

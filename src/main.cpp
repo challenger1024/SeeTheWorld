@@ -12,7 +12,7 @@ void SeeTheWorld::run() {
     }
 }
 
-/*
+
 int main(){
     std::cout<<"按下空格拍照，Q键退出！"<<std::endl;
     SeeTheWorld stw;
@@ -23,8 +23,7 @@ int main(){
     }
     return 0;
 }
-*/
-
+/*
 int main(int argc, char* argv[]) {
     std::cout << "按下空格拍照，Q键退出！" << std::endl;
 
@@ -48,3 +47,4 @@ int main(int argc, char* argv[]) {
 */
     return 0;
 }
+*/
