@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SeeTheWorld </title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 100px;
+        }
+        button {
+            font-size: 1.5em;
+            padding: 20px 40px;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 30px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎使用SeeTheWorld </h1>
+    <button id="captureBtn">📸 拍照</button>
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('captureBtn').onclick = async () => {
+            document.getElementById('status').innerText = "正在描述...";
+            const res = await fetch("/capture");
+            const data = await res.json();
+            document.getElementById('status').innerText = data.message;
+        };
+    </script>
+</body>
+</html>
