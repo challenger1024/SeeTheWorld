@@ -40,11 +40,11 @@ int main(int argc, char* argv[]) {
 
     SeeTheWorld stw;
     stw.run();
-/*
+
     if (stw.capture()) {
         stw.send_image();
     }
-*/
+
     return 0;
 }
 */
