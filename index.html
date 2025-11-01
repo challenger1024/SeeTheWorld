@@ -2,40 +2,84 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>SeeTheWorld </title>
+    <title>SeeTheWorld</title>
     <style>
         body {
-            font-family: sans-serif;
-            text-align: center;
-            padding-top: 100px;
+            font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
         }
+
+        h1 {
+            margin-top: 80px;
+            font-size: 2.5em;
+            color: #2c3e50;
+        }
+
+        .description {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+            max-width: 700px;
+            margin: 30px 20px 50px;
+            text-align: left;
+            line-height: 1.8;
+            color: #444;
+            font-size: 1.1em;
+        }
+
         button {
             font-size: 1.5em;
-            padding: 20px 40px;
-            border-radius: 10px;
+            padding: 20px 60px;
+            border-radius: 12px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         #status {
-            margin-top: 30px;
-            font-size: 1.2em;
+            margin-top: 40px;
+            font-size: 1.3em;
+            color: #333;
+            min-height: 1.5em;
         }
     </style>
 </head>
 <body>
-    <h1>欢迎使用SeeTheWorld </h1>
+    <h1>欢迎使用 SeeTheWorld</h1>
+
+    <div class="description">
+        <p>
+            <strong>SeeTheWorld</strong> 是一个运行在 <strong>LIcheePi 4A</strong> 上的小程序，
+            旨在帮助视力障碍人士感知和理解周围环境。
+        </p>
+        <p>
+            程序通过摄像头捕捉画面，当您按下下方的“拍照”按钮后，
+            系统会自动启动识别过程。请稍等片刻，AI 将以语音播报的形式，
+            为您描述照片中的内容。
+        </p>
+    </div>
+
     <button id="captureBtn">📸 拍照</button>
     <div id="status"></div>
 
     <script>
         document.getElementById('captureBtn').onclick = async () => {
             document.getElementById('status').innerText = "正在描述...";
-            const res = await fetch("/capture");
+            const res = await fetch("/see_the_world?param=150");
             const data = await res.json();
             document.getElementById('status').innerText = data.message;
         };
