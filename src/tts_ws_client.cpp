@@ -215,7 +215,7 @@ int tts_speak(const std::string &text) {
     // create url
     std::string uri = create_url(wsParam.APPID, wsParam.APIKey, wsParam.APISecret);
 
-    std::cout << "Connecting to: " << uri << std::endl;
+//    std::cout << "Connecting to: " << uri << std::endl;
 
     client c;
     std::string out_filename = "demo.pcm";
@@ -273,15 +273,15 @@ int tts_speak(const std::string &text) {
                         std::string errMsg = j.value("message", std::string("unknown"));
                         std::cerr << "sid:" << sid << " call error:" << errMsg << " code is:" << code << std::endl;
                     } else {
-                        std::cout << "Received chunk, status=" << status << std::endl;
+//                        std::cout << "Received chunk, status=" << status << std::endl;
                     }
 
                     if (status == 2) {
-                        std::cout << "Server indicated finished (status==2). Closing..." << std::endl;
+//                        std::cout << "Server indicated finished (status==2). Closing..." << std::endl;
                         c.close(hdl, websocketpp::close::status::normal, "finish");
                     }
                 } else {
-                    std::cout << "Received message: " << payload << std::endl;
+//                    std::cout << "Received message: " << payload << std::endl;
                 }
             } catch (const std::exception &e) {
                 std::cerr << "Exception in message handler: " << e.what() << std::endl;
@@ -289,7 +289,7 @@ int tts_speak(const std::string &text) {
         });
 
         c.set_open_handler([&](connection_hdl hdl) {
-            std::cout << "Connection opened, sending synth request..." << std::endl;
+//            std::cout << "Connection opened, sending synth request..." << std::endl;
             // build payload json with common/business/data
             json d;
             d["common"] = json::parse(wsParam.common_json());
@@ -307,12 +307,12 @@ int tts_speak(const std::string &text) {
             if (ec) {
                 std::cerr << "Send failed: " << ec.message() << std::endl;
             } else {
-                std::cout << "Sent synthesis request." << std::endl;
+//                std::cout << "Sent synthesis request." << std::endl;
             }
         });
 
         c.set_fail_handler([&](connection_hdl) {
-            std::cout << "Connection failed" << std::endl;
+//            std::cout << "Connection failed" << std::endl;
         });
 
         c.set_close_handler([&](connection_hdl) {
