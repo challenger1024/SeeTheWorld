@@ -9,6 +9,7 @@
 
 
 void SeeTheWorld::speak(const std::string& text) {
+    tts_speak(text);
     pid_t pid = fork();
     if (pid == 0) {
         // 子进程执行 aplay

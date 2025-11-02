@@ -8,7 +8,9 @@ void SeeTheWorld::run() {
     while (running) {
         this->processInput(); // 检测键盘
         usleep(100000); // 0.1 秒轮询
-//        std::cout<<"按下空格键拍照，按下q退出程序！"<<std::endl;
+//        std::cout<<""<<std::endl;
+
+        std::cout<<"按下空格键拍照"<<std::endl;
     }
 }
 
