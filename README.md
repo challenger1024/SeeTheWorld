@@ -42,6 +42,29 @@ pkg-config --libs libcurl
 
 Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl` 的编译/链接参数。
 
+如果使用 PLCT 工具链时仍然提示找不到系统头文件，例如 `curl/curl.h` 或 `openssl/hmac.h`，Makefile 会在 RISC-V 开发板上额外加入这些默认路径：
+
+```bash
+/usr/include
+/usr/include/riscv64-linux-gnu
+/usr/lib/riscv64-linux-gnu
+/lib/riscv64-linux-gnu
+```
+
+可以用下面的命令确认文件是否存在：
+
+```bash
+ls /usr/include/curl/curl.h /usr/include/riscv64-linux-gnu/curl/curl.h
+ls /usr/include/openssl/hmac.h /usr/include/riscv64-linux-gnu/openssl/hmac.h
+```
+
+如果你的系统路径不同，可以覆盖：
+
+```bash
+make riscv RISCV_SYSTEM_INCLUDE_DIRS="/your/include /your/multiarch/include"
+make riscv RISCV_SYSTEM_LIBRARY_DIRS="/your/lib /your/multiarch/lib"
+```
+
 ### RISC-V 交叉编译依赖
 如果在 x86 主机上生成 RISC-V 可执行文件，需要安装交叉编译器和一套 RISC-V sysroot。具体包名与系统版本有关，常见起点如下：
 

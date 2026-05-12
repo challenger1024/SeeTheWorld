@@ -18,8 +18,12 @@ RISCV_MARCH ?= rv64gc
 RISCV_MABI ?= lp64d
 RISCV_ISA_SPEC ?= 2.2
 RISCV_AS_MARCH ?= rv64imafdc
+RISCV_SYSTEM_INCLUDE_DIRS ?= /usr/include /usr/include/riscv64-linux-gnu
+RISCV_SYSTEM_LIBRARY_DIRS ?= /usr/lib/riscv64-linux-gnu /lib/riscv64-linux-gnu
 RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute -mno-relax -Wa,-march=$(RISCV_AS_MARCH)
 RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI) $(RISCV_COMPAT_FLAGS)
+RISCV_SYSTEM_CPPFLAGS := $(foreach dir,$(RISCV_SYSTEM_INCLUDE_DIRS),-isystem $(dir))
+RISCV_SYSTEM_LDFLAGS := $(foreach dir,$(RISCV_SYSTEM_LIBRARY_DIRS),-L$(dir) -Wl,-rpath-link,$(dir))
 
 ifeq ($(ARCH),riscv)
 TARGET := $(TARGET_NAME)-riscv64
@@ -41,6 +45,9 @@ PKG_CONFIG_SYSROOT_DIR := $(SYSROOT)
 PKG_CONFIG_LIBDIR := $(SYSROOT)/usr/lib/riscv64-linux-gnu/pkgconfig:$(SYSROOT)/usr/lib/pkgconfig:$(SYSROOT)/usr/share/pkgconfig
 export PKG_CONFIG_SYSROOT_DIR
 export PKG_CONFIG_LIBDIR
+else ifeq ($(HOST_MACHINE),riscv64)
+CPPFLAGS_SYSROOT := $(RISCV_SYSTEM_CPPFLAGS)
+LDFLAGS_SYSROOT := $(RISCV_SYSTEM_LDFLAGS)
 endif
 else
 TARGET := $(TARGET_NAME)
@@ -111,6 +118,8 @@ print-config:
 	@echo "TARGET_ARCH_FLAGS=$(TARGET_ARCH_FLAGS)"
 	@echo "RISCV_COMPAT_FLAGS=$(RISCV_COMPAT_FLAGS)"
 	@echo "RISCV_AS_MARCH=$(RISCV_AS_MARCH)"
+	@echo "RISCV_SYSTEM_INCLUDE_DIRS=$(RISCV_SYSTEM_INCLUDE_DIRS)"
+	@echo "RISCV_SYSTEM_LIBRARY_DIRS=$(RISCV_SYSTEM_LIBRARY_DIRS)"
 	@echo "PKG_CONFIG_CFLAGS=$(PKG_CONFIG_CFLAGS)"
 	@echo "PKG_CONFIG_LIBS=$(PKG_CONFIG_LIBS)"
 
