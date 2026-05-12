@@ -18,7 +18,7 @@ RISCV_MARCH ?= rv64gc
 RISCV_MABI ?= lp64d
 RISCV_ISA_SPEC ?= 2.2
 RISCV_AS_MARCH ?= rv64imafdc
-RISCV_SYSTEM_INCLUDE_DIRS ?= /usr/include /usr/include/riscv64-linux-gnu
+RISCV_SYSTEM_INCLUDE_DIRS ?= /usr/include /usr/include/riscv64-linux-gnu /usr/local/include /usr/include/mit-krb5 /usr/include/p11-kit-1
 RISCV_SYSTEM_LIBRARY_DIRS ?= /usr/lib/riscv64-linux-gnu /lib/riscv64-linux-gnu
 RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute -mno-relax -Wa,-march=$(RISCV_AS_MARCH)
 RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI) $(RISCV_COMPAT_FLAGS)
@@ -46,7 +46,7 @@ PKG_CONFIG_LIBDIR := $(SYSROOT)/usr/lib/riscv64-linux-gnu/pkgconfig:$(SYSROOT)/u
 export PKG_CONFIG_SYSROOT_DIR
 export PKG_CONFIG_LIBDIR
 else ifeq ($(HOST_MACHINE),riscv64)
-CPPFLAGS_SYSROOT := $(RISCV_SYSTEM_CPPFLAGS)
+CXXFLAGS_SYSROOT := $(RISCV_SYSTEM_CPPFLAGS)
 LDFLAGS_SYSROOT := $(RISCV_SYSTEM_LDFLAGS)
 endif
 else

@@ -47,6 +47,9 @@ Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl`
 ```bash
 /usr/include
 /usr/include/riscv64-linux-gnu
+/usr/local/include
+/usr/include/mit-krb5
+/usr/include/p11-kit-1
 /usr/lib/riscv64-linux-gnu
 /lib/riscv64-linux-gnu
 ```
