@@ -33,6 +33,15 @@ sudo apt install -y \
   alsa-utils
 ```
 
+如果编译时提示找不到 `curl/curl.h`，但 `libcurl4-openssl-dev` 已经安装，可以检查 pkg-config 是否能给出 libcurl 的头文件路径：
+
+```bash
+pkg-config --cflags libcurl
+pkg-config --libs libcurl
+```
+
+Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl` 的编译/链接参数。
+
 ### RISC-V 交叉编译依赖
 如果在 x86 主机上生成 RISC-V 可执行文件，需要安装交叉编译器和一套 RISC-V sysroot。具体包名与系统版本有关，常见起点如下：
 

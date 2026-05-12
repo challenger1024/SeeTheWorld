@@ -54,15 +54,14 @@ TARGET_ARCH_FLAGS := $(RISCV_FLAGS)
 endif
 endif
 
-PKG_CONFIG_DEPS := opencv4
+PKG_CONFIG_DEPS := opencv4 libcurl openssl
 
 CXXFLAGS ?= -std=c++17 -Wall -Wextra
 PKG_CONFIG_CFLAGS := $(shell $(PKG_CONFIG) --silence-errors --cflags $(PKG_CONFIG_DEPS))
 PKG_CONFIG_LIBS := $(shell $(PKG_CONFIG) --silence-errors --libs $(PKG_CONFIG_DEPS))
 CPPFLAGS += $(CXXFLAGS_SYSROOT) $(PKG_CONFIG_CFLAGS)
 CXXFLAGS += $(TARGET_ARCH_FLAGS)
-LDLIBS += $(PKG_CONFIG_LIBS) \
-          -lcurl -lssl -lcrypto -lboost_system -lboost_thread -lpthread
+LDLIBS += $(PKG_CONFIG_LIBS) -lboost_system -lboost_thread -lpthread
 LDFLAGS += $(LDFLAGS_SYSROOT)
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
