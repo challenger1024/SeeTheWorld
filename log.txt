@@ -1,27 +1,11 @@
 make ARCH=riscv CXX="/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++" SYSROOT=""
 make[1]: Entering directory '/home/debian/tjc/SeeTheWorld'
-mkdir -p build/riscv64
-Compiling src/capture.cpp ...
-/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/capture.cpp -o build/riscv64/capture.o
-In file included from /usr/include/opencv4/opencv2/stitching.hpp:51,
-                 from /usr/include/opencv4/opencv2/opencv.hpp:86,
-                 from src/capture.cpp:1:
-/usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp:78:18: warning: 'virtual void cv::detail::ExposureCompensator::feed(const std::vector<cv::Point_<int> >&, const std::vector<cv::UMat>&, const std::vector<std::pair<cv::UMat, unsigned char> >&)' was hidden [-Woverloaded-virtual=]
-   78 |     virtual void feed(const std::vector<Point> &corners, const std::vector<UMat> &images,
-      |                  ^~~~
-/usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp:190:10: note:   by 'void cv::detail::BlocksCompensator::feed(const std::vector<cv::Point_<int> >&, const std::vector<cv::UMat>&, const std::vector<std::pair<cv::UMat, unsigned char> >&)'
-  190 |     void feed(const std::vector<Point> &corners, const std::vector<UMat> &images,
-      |          ^~~~
-Compiling src/main.cpp ...
-/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/main.cpp -o build/riscv64/main.o
-Compiling src/processInput.cpp ...
-/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/processInput.cpp -o build/riscv64/processInput.o
-Compiling src/sendImage.cpp ...
-/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/sendImage.cpp -o build/riscv64/sendImage.o
-src/sendImage.cpp:6:10: fatal error: curl/curl.h: No such file or directory
-    6 | #include <curl/curl.h>
-      |          ^~~~~~~~~~~~~
+Compiling src/tts_ws_client.cpp ...
+/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4 -I/usr/include/riscv64-linux-gnu -isystem /usr/include/mit-krb5 -I/usr/include/p11-kit-1  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/tts_ws_client.cpp -o build/riscv64/tts_ws_client.o
+src/tts_ws_client.cpp:15:10: fatal error: openssl/hmac.h: No such file or directory
+   15 | #include <openssl/hmac.h>
+      |          ^~~~~~~~~~~~~~~~
 compilation terminated.
-make[1]: *** [makefile:99: build/riscv64/sendImage.o] Error 1
+make[1]: *** [makefile:105: build/riscv64/tts_ws_client.o] Error 1
 make[1]: Leaving directory '/home/debian/tjc/SeeTheWorld'
-make: *** [makefile:80: riscv] Error 2
+make: *** [makefile:86: riscv] Error 2
