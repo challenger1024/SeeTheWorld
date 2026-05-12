@@ -12,6 +12,10 @@ BUILD_DIR := build
 TARGET_NAME := see_the_world
 
 ARCH ?= native
+HOST_MACHINE := $(shell uname -m)
+RISCV_MARCH ?= rv64gc
+RISCV_MABI ?= lp64d
+RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI)
 
 ifeq ($(ARCH),riscv)
 TARGET := $(TARGET_NAME)-riscv64
@@ -20,6 +24,7 @@ CXX := riscv64-linux-gnu-g++
 endif
 PKG_CONFIG ?= $(shell if command -v riscv64-linux-gnu-pkg-config >/dev/null 2>&1; then echo riscv64-linux-gnu-pkg-config; else echo pkg-config; fi)
 OBJ_DIR := $(BUILD_DIR)/riscv64
+TARGET_ARCH_FLAGS := $(RISCV_FLAGS)
 
 ifneq ($(SYSROOT),)
 CXXFLAGS_SYSROOT := --sysroot=$(SYSROOT)
@@ -36,6 +41,9 @@ CXX := g++
 endif
 PKG_CONFIG ?= pkg-config
 OBJ_DIR := $(BUILD_DIR)/native
+ifeq ($(HOST_MACHINE),riscv64)
+TARGET_ARCH_FLAGS := $(RISCV_FLAGS)
+endif
 endif
 
 PKG_CONFIG_DEPS := opencv4
@@ -44,6 +52,7 @@ CXXFLAGS ?= -std=c++17 -Wall -Wextra
 PKG_CONFIG_CFLAGS := $(shell $(PKG_CONFIG) --silence-errors --cflags $(PKG_CONFIG_DEPS))
 PKG_CONFIG_LIBS := $(shell $(PKG_CONFIG) --silence-errors --libs $(PKG_CONFIG_DEPS))
 CPPFLAGS += $(CXXFLAGS_SYSROOT) $(PKG_CONFIG_CFLAGS)
+CXXFLAGS += $(TARGET_ARCH_FLAGS)
 LDLIBS += $(PKG_CONFIG_LIBS) \
           -lcurl -lssl -lcrypto -lboost_system -lboost_thread -lpthread
 LDFLAGS += $(LDFLAGS_SYSROOT)
@@ -91,6 +100,7 @@ print-config:
 	@echo "SYSROOT=$(SYSROOT)"
 	@echo "TARGET=$(TARGET)"
 	@echo "OBJ_DIR=$(OBJ_DIR)"
+	@echo "TARGET_ARCH_FLAGS=$(TARGET_ARCH_FLAGS)"
 	@echo "PKG_CONFIG_CFLAGS=$(PKG_CONFIG_CFLAGS)"
 	@echo "PKG_CONFIG_LIBS=$(PKG_CONFIG_LIBS)"
 

@@ -92,6 +92,32 @@ make print-config
 make print-config ARCH=riscv
 ```
 
+### RISC-V 架构参数
+Makefile 在 RISC-V 交叉构建，或在 RISC-V 开发板上原生构建时，默认使用较保守的架构参数：
+
+```bash
+-march=rv64gc -mabi=lp64d
+```
+
+这是为了避免部分开发板系统上的 assembler/binutils 版本较旧，不能识别较新的 RISC-V 扩展名，例如 `zaamo`、`zalrsc`。如果你的开发板工具链报类似错误：
+
+```text
+unknown prefixed ISA extension `zaamo'
+```
+
+可以先清理后重新构建：
+
+```bash
+make clean
+make
+```
+
+如果你的系统 ABI 或 CPU 架构不同，可以覆盖默认值：
+
+```bash
+make RISCV_MARCH=rv64imafdc RISCV_MABI=lp64d
+```
+
 ## 环境变量配置
 复制模板文件，填入你自己的 API Key：
 
