@@ -84,7 +84,13 @@ std::string readFileAsBase64(const std::string& path) {
 
 int SeeTheWorld::send_image(){
     // 从环境变量获取 API Key
-    std::string api_key = std::getenv("ARK_API_KEY");
+    const char* apiKeyEnv = std::getenv("ARK_API_KEY");
+    if (!apiKeyEnv || apiKeyEnv[0] == '\0') {
+        std::cerr << "Please set ARK_API_KEY environment variable!" << std::endl;
+        return 1;
+    }
+
+    std::string api_key = apiKeyEnv;
     if(api_key.empty()){
         std::cerr << "Please set ARK_API_KEY environment variable!" << std::endl;
         return 1;
@@ -131,6 +137,9 @@ int SeeTheWorld::send_image(){
 
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
+    } else {
+        std::cerr << "Failed to initialize curl." << std::endl;
+        return 1;
     }
     return 0;
 }

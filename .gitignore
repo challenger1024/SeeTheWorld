@@ -1,2 +1,16 @@
 src/.venv/
 src/image.jpg
+
+# Local secrets
+setENV.sh
+.codex
+
+# Build outputs
+build/
+see_the_world
+see_the_world-riscv64
+
+# Runtime outputs
+image.jpg
+demo.pcm
+test.jpg

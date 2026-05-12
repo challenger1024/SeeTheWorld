@@ -5,12 +5,11 @@
 int EXPOSURE=50;
 void SeeTheWorld::run() {
     this->running = true;
+    std::cout<<"按下空格键拍照"<<std::endl;
     while (running) {
         this->processInput(); // 检测键盘
         usleep(100000); // 0.1 秒轮询
 //        std::cout<<""<<std::endl;
-
-        std::cout<<"按下空格键拍照"<<std::endl;
     }
 }
 

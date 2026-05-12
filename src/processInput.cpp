@@ -53,7 +53,7 @@ void SeeTheWorld::processInput() {
             cout << "📸 拍照触发" << endl;
             if(this->capture()){
                 this->send_image();
-                std::cout<<"按下空格拍照，Q键退出！"<<std::endl;
+                std::cout<<"按下空格键拍照"<<std::endl;
                 return;
             }
             
