@@ -104,13 +104,14 @@ make print-config ARCH=riscv
 Makefile 在 RISC-V 交叉构建，或在 RISC-V 开发板上原生构建时，默认使用较保守的架构参数：
 
 ```bash
--march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -Wa,-march=rv64imafdc
+-march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc
 ```
 
-这是为了避免部分开发板系统上的 assembler/binutils 版本较旧，不能识别 GCC 14 生成的较新 RISC-V 扩展名或 arch attribute，例如 `zaamo`、`zalrsc`。其中 `-Wa,-march=rv64imafdc` 会给 assembler 单独指定旧格式架构字符串，避免 assembler 解析 GCC 展开的新格式 `-march`。如果你的开发板工具链报类似错误：
+这是为了避免部分开发板系统上的 assembler/binutils 版本较旧，不能识别 GCC 14 生成的较新 RISC-V 扩展名、arch attribute 或 relaxation 相关汇编，例如 `zaamo`、`zalrsc`、`non-constant .uleb128`。其中 `-Wa,-march=rv64imafdc` 会给 assembler 单独指定旧格式架构字符串，`-mno-relax` 会禁用 RISC-V relaxation，避免旧 assembler 处理 `.uleb128` 失败。如果你的开发板工具链报类似错误：
 
 ```text
 unknown prefixed ISA extension `zaamo'
+non-constant .uleb128 is not supported
 ```
 
 可以先清理后重新构建：

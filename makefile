@@ -17,7 +17,7 @@ RISCV_MARCH ?= rv64gc
 RISCV_MABI ?= lp64d
 RISCV_ISA_SPEC ?= 2.2
 RISCV_AS_MARCH ?= rv64imafdc
-RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute -Wa,-march=$(RISCV_AS_MARCH)
+RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute -mno-relax -Wa,-march=$(RISCV_AS_MARCH)
 RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI) $(RISCV_COMPAT_FLAGS)
 
 ifeq ($(ARCH),riscv)
