@@ -1,121 +1,27 @@
-mkdir -p build/native
+make ARCH=riscv CXX="/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++" SYSROOT=""
+make[1]: Entering directory '/home/debian/tjc/SeeTheWorld'
+mkdir -p build/riscv64
 Compiling src/capture.cpp ...
-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -Wa,-march=rv64imafdc -MMD -MP -c src/capture.cpp -o build/native/capture.o
-/tmp/ccMx6nCU.s: Assembler messages:
-/tmp/ccMx6nCU.s:449: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:451: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:452: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:453: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:455: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:456: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:977: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:979: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:980: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:983: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:984: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:985: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:987: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:988: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:989: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:991: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:992: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1391: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1393: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1394: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1397: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1398: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1399: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1401: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1402: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1403: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1405: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1406: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1407: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1409: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1410: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1411: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1413: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1414: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1415: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1417: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1418: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1419: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1421: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1422: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1844: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1846: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1847: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1850: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1851: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1852: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1854: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1855: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1856: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1858: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1859: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1860: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1862: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1863: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1864: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1866: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1867: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1868: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1870: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:1871: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2156: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2158: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2159: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2160: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2162: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2163: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2292: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2359: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2485: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2487: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2488: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2489: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2491: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2492: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2597: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2853: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2855: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2856: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2857: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2859: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2860: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2861: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2863: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2864: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2865: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2867: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:2868: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3029: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3031: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3032: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3033: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3035: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3036: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3037: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3039: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3040: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3190: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3308: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3310: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3311: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3314: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3315: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3316: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3318: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3319: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3834: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3836: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3837: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3840: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3841: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3842: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3844: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3845: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3846: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3848: Error: non-constant .uleb128 is not supported
-/tmp/ccMx6nCU.s:3849: Error: non-constant .uleb128 is not supported
-make: *** [makefile:102: build/native/capture.o] Error 1
+/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/capture.cpp -o build/riscv64/capture.o
+In file included from /usr/include/opencv4/opencv2/stitching.hpp:51,
+                 from /usr/include/opencv4/opencv2/opencv.hpp:86,
+                 from src/capture.cpp:1:
+/usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp:78:18: warning: 'virtual void cv::detail::ExposureCompensator::feed(const std::vector<cv::Point_<int> >&, const std::vector<cv::UMat>&, const std::vector<std::pair<cv::UMat, unsigned char> >&)' was hidden [-Woverloaded-virtual=]
+   78 |     virtual void feed(const std::vector<Point> &corners, const std::vector<UMat> &images,
+      |                  ^~~~
+/usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp:190:10: note:   by 'void cv::detail::BlocksCompensator::feed(const std::vector<cv::Point_<int> >&, const std::vector<cv::UMat>&, const std::vector<std::pair<cv::UMat, unsigned char> >&)'
+  190 |     void feed(const std::vector<Point> &corners, const std::vector<UMat> &images,
+      |          ^~~~
+Compiling src/main.cpp ...
+/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/main.cpp -o build/riscv64/main.o
+Compiling src/processInput.cpp ...
+/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/processInput.cpp -o build/riscv64/processInput.o
+Compiling src/sendImage.cpp ...
+/home/debian/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4  -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/sendImage.cpp -o build/riscv64/sendImage.o
+src/sendImage.cpp:6:10: fatal error: curl/curl.h: No such file or directory
+    6 | #include <curl/curl.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [makefile:99: build/riscv64/sendImage.o] Error 1
+make[1]: Leaving directory '/home/debian/tjc/SeeTheWorld'
+make: *** [makefile:80: riscv] Error 2
