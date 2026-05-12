@@ -40,7 +40,13 @@ pkg-config --cflags libcurl
 pkg-config --libs libcurl
 ```
 
-Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl` 的编译/链接参数。
+Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl` 的编译参数。OpenCV 链接默认只使用本项目需要的几个模块：
+
+```bash
+-lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core
+```
+
+这样可以避免 `pkg-config --libs opencv4` 拉入 `opencv_hdf`、`gdal` 等大量无关模块，减少 RISC-V 开发板上间接依赖库缺失导致的链接错误。
 
 如果使用 PLCT 工具链时仍然提示找不到系统头文件，例如 `curl/curl.h` 或 `openssl/hmac.h`，Makefile 会在 RISC-V 开发板上额外加入这些默认路径：
 

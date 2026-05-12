@@ -61,14 +61,16 @@ TARGET_ARCH_FLAGS := $(RISCV_FLAGS)
 endif
 endif
 
-PKG_CONFIG_DEPS := opencv4 libcurl openssl
+PKG_CONFIG_DEPS := libcurl openssl
+OPENCV_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags opencv4)
+OPENCV_LIBS ?= -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core
 
 CXXFLAGS ?= -std=c++17 -Wall -Wextra
 PKG_CONFIG_CFLAGS := $(shell $(PKG_CONFIG) --silence-errors --cflags $(PKG_CONFIG_DEPS))
 PKG_CONFIG_LIBS := $(shell $(PKG_CONFIG) --silence-errors --libs $(PKG_CONFIG_DEPS))
-CPPFLAGS += $(CXXFLAGS_SYSROOT) $(PKG_CONFIG_CFLAGS)
+CPPFLAGS += $(CXXFLAGS_SYSROOT) $(OPENCV_CFLAGS) $(PKG_CONFIG_CFLAGS)
 CXXFLAGS += $(TARGET_ARCH_FLAGS)
-LDLIBS += $(PKG_CONFIG_LIBS) -lboost_system -lboost_thread -lpthread
+LDLIBS += $(OPENCV_LIBS) $(PKG_CONFIG_LIBS) -lboost_system -lboost_thread -lpthread
 LDFLAGS += $(LDFLAGS_SYSROOT)
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
@@ -90,8 +92,8 @@ check-deps:
 		echo "Missing pkg-config command: $(PKG_CONFIG)"; \
 		exit 1; \
 	}
-	@$(PKG_CONFIG) --exists $(PKG_CONFIG_DEPS) || { \
-		echo "Missing pkg-config package: $(PKG_CONFIG_DEPS)"; \
+	@$(PKG_CONFIG) --exists opencv4 $(PKG_CONFIG_DEPS) || { \
+		echo "Missing pkg-config package: opencv4 $(PKG_CONFIG_DEPS)"; \
 		echo "Install the development package, or set PKG_CONFIG_PATH/PKG_CONFIG_LIBDIR for the target sysroot."; \
 		exit 1; \
 	}
@@ -120,6 +122,8 @@ print-config:
 	@echo "RISCV_AS_MARCH=$(RISCV_AS_MARCH)"
 	@echo "RISCV_SYSTEM_INCLUDE_DIRS=$(RISCV_SYSTEM_INCLUDE_DIRS)"
 	@echo "RISCV_SYSTEM_LIBRARY_DIRS=$(RISCV_SYSTEM_LIBRARY_DIRS)"
+	@echo "OPENCV_CFLAGS=$(OPENCV_CFLAGS)"
+	@echo "OPENCV_LIBS=$(OPENCV_LIBS)"
 	@echo "PKG_CONFIG_CFLAGS=$(PKG_CONFIG_CFLAGS)"
 	@echo "PKG_CONFIG_LIBS=$(PKG_CONFIG_LIBS)"
 
