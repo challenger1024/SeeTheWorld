@@ -16,15 +16,24 @@ HOST_MACHINE := $(shell uname -m)
 RISCV_MARCH ?= rv64gc
 RISCV_MABI ?= lp64d
 RISCV_ISA_SPEC ?= 2.2
-RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute
+RISCV_AS_MARCH ?= rv64imafdc
+RISCV_COMPAT_FLAGS ?= -misa-spec=$(RISCV_ISA_SPEC) -mno-riscv-attribute -Wa,-march=$(RISCV_AS_MARCH)
 RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI) $(RISCV_COMPAT_FLAGS)
 
 ifeq ($(ARCH),riscv)
 TARGET := $(TARGET_NAME)-riscv64
 ifeq ($(origin CXX),default)
+ifeq ($(HOST_MACHINE),riscv64)
+CXX := g++
+else
 CXX := riscv64-linux-gnu-g++
 endif
+endif
+ifeq ($(HOST_MACHINE),riscv64)
+PKG_CONFIG ?= pkg-config
+else
 PKG_CONFIG ?= $(shell if command -v riscv64-linux-gnu-pkg-config >/dev/null 2>&1; then echo riscv64-linux-gnu-pkg-config; else echo pkg-config; fi)
+endif
 OBJ_DIR := $(BUILD_DIR)/riscv64
 TARGET_ARCH_FLAGS := $(RISCV_FLAGS)
 
@@ -104,6 +113,7 @@ print-config:
 	@echo "OBJ_DIR=$(OBJ_DIR)"
 	@echo "TARGET_ARCH_FLAGS=$(TARGET_ARCH_FLAGS)"
 	@echo "RISCV_COMPAT_FLAGS=$(RISCV_COMPAT_FLAGS)"
+	@echo "RISCV_AS_MARCH=$(RISCV_AS_MARCH)"
 	@echo "PKG_CONFIG_CFLAGS=$(PKG_CONFIG_CFLAGS)"
 	@echo "PKG_CONFIG_LIBS=$(PKG_CONFIG_LIBS)"
 

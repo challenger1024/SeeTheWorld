@@ -59,8 +59,16 @@ make
 使用`./see_the_world [integer]`，设置曝光度，目前是50，integer是一个整数
 使用`make clean`清理编译生成的中间文件和最终可执行文件，让工程恢复到干净状态。
 
-### RISC-V 交叉构建
-如果系统里已经有可用的 `riscv64-linux-gnu-g++` 和 `riscv64-linux-gnu-pkg-config`：
+### RISC-V 构建
+如果是在 RISC-V 开发板上原生编译，直接执行：
+
+```bash
+make
+```
+
+开发板上的普通 `g++` 通常已经是 RISC-V 原生编译器，例如 `g++ -v` 里显示 `Target: riscv64-linux-gnu`。因此在开发板上不需要交叉编译器。`make riscv` 也可以使用，但它主要是给 x86 主机交叉编译准备的。
+
+如果是在 x86 主机上交叉编译，并且系统里已经有可用的 `riscv64-linux-gnu-g++` 和 `riscv64-linux-gnu-pkg-config`：
 
 ```bash
 make riscv
@@ -96,10 +104,10 @@ make print-config ARCH=riscv
 Makefile 在 RISC-V 交叉构建，或在 RISC-V 开发板上原生构建时，默认使用较保守的架构参数：
 
 ```bash
--march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute
+-march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -Wa,-march=rv64imafdc
 ```
 
-这是为了避免部分开发板系统上的 assembler/binutils 版本较旧，不能识别较新的 RISC-V 扩展名或 arch attribute，例如 `zaamo`、`zalrsc`。如果你的开发板工具链报类似错误：
+这是为了避免部分开发板系统上的 assembler/binutils 版本较旧，不能识别 GCC 14 生成的较新 RISC-V 扩展名或 arch attribute，例如 `zaamo`、`zalrsc`。其中 `-Wa,-march=rv64imafdc` 会给 assembler 单独指定旧格式架构字符串，避免 assembler 解析 GCC 展开的新格式 `-march`。如果你的开发板工具链报类似错误：
 
 ```text
 unknown prefixed ISA extension `zaamo'
@@ -116,6 +124,13 @@ make
 
 ```bash
 make RISCV_MARCH=rv64imafdc RISCV_MABI=lp64d
+```
+
+如果仍然遇到 `zaamo`，可以显式指定 assembler 使用的架构字符串：
+
+```bash
+make clean
+make RISCV_AS_MARCH=rv64imafdc
 ```
 
 如果开发板上的 `g++` 太旧，不支持 `-misa-spec` 或 `-mno-riscv-attribute`，可以清空兼容参数再编译：
