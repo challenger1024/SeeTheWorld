@@ -13,6 +13,7 @@ TARGET_NAME := see_the_world
 
 ARCH ?= native
 HOST_MACHINE := $(shell uname -m)
+RISCV_CXX ?= $(HOME)/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++
 RISCV_MARCH ?= rv64gc
 RISCV_MABI ?= lp64d
 RISCV_ISA_SPEC ?= 2.2
@@ -23,11 +24,7 @@ RISCV_FLAGS := -march=$(RISCV_MARCH) -mabi=$(RISCV_MABI) $(RISCV_COMPAT_FLAGS)
 ifeq ($(ARCH),riscv)
 TARGET := $(TARGET_NAME)-riscv64
 ifeq ($(origin CXX),default)
-ifeq ($(HOST_MACHINE),riscv64)
-CXX := g++
-else
-CXX := riscv64-linux-gnu-g++
-endif
+CXX := $(RISCV_CXX)
 endif
 ifeq ($(HOST_MACHINE),riscv64)
 PKG_CONFIG ?= pkg-config
@@ -80,7 +77,7 @@ native:
 	$(MAKE) ARCH=native
 
 riscv:
-	$(MAKE) ARCH=riscv SYSROOT="$(SYSROOT)"
+	$(MAKE) ARCH=riscv CXX="$(RISCV_CXX)" SYSROOT="$(SYSROOT)"
 
 check-deps:
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { \
@@ -107,6 +104,7 @@ $(OBJ_DIR):
 print-config:
 	@echo "ARCH=$(ARCH)"
 	@echo "CXX=$(CXX)"
+	@echo "RISCV_CXX=$(RISCV_CXX)"
 	@echo "PKG_CONFIG=$(PKG_CONFIG)"
 	@echo "SYSROOT=$(SYSROOT)"
 	@echo "TARGET=$(TARGET)"

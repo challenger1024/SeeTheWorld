@@ -60,13 +60,30 @@ make
 使用`make clean`清理编译生成的中间文件和最终可执行文件，让工程恢复到干净状态。
 
 ### RISC-V 构建
-如果是在 RISC-V 开发板上原生编译，直接执行：
+如果是在 RISC-V 开发板上原生编译，可以直接执行：
 
 ```bash
 make
 ```
 
-开发板上的普通 `g++` 通常已经是 RISC-V 原生编译器，例如 `g++ -v` 里显示 `Target: riscv64-linux-gnu`。因此在开发板上不需要交叉编译器。`make riscv` 也可以使用，但它主要是给 x86 主机交叉编译准备的。
+如果开发板系统自带的 `g++` 和 assembler/binutils 版本不匹配，推荐使用 PLCT 工具链：
+
+```bash
+make clean
+make riscv
+```
+
+`make riscv` 默认使用：
+
+```bash
+~/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++
+```
+
+也可以手动覆盖：
+
+```bash
+make riscv CXX=~/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++
+```
 
 如果是在 x86 主机上交叉编译，并且系统里已经有可用的 `riscv64-linux-gnu-g++` 和 `riscv64-linux-gnu-pkg-config`：
 
