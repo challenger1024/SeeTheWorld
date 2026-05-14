@@ -51,7 +51,7 @@ std::string detectHdmiAudioDevice() {
             continue;
         }
 
-        std::string device = "hw:" + match[1].str() + "," + match[2].str();
+        std::string device = "plughw:" + match[1].str() + "," + match[2].str();
         if (fallbackDevice.empty()) {
             fallbackDevice = device;
         }
@@ -120,6 +120,8 @@ void SeeTheWorld::speak(const std::string& text) {
 
         if (stoppedByUser) {
             std::cout << "播放已中止。" << std::endl;
+        } else if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+            std::cerr << "播放失败，aplay 退出码: " << WEXITSTATUS(status) << std::endl;
         } else {
             std::cout << "播放完成。" << std::endl;
         }

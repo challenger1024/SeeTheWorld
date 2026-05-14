@@ -302,7 +302,7 @@ export STW_CAMERA_BRIGHTNESS=80
 程序会打印保存帧的平均亮度。如果平均亮度接近 0，说明保存的是黑帧，需要继续调整摄像头、光照或曝光参数。
 
 ## 音频配置
-程序会播放 TTS 生成的 `demo.pcm`。如果没有设置 `STW_AUDIO_DEVICE`，程序会调用 `aplay -l` 自动检测 HDMI/ALSA 播放设备，优先使用名称里包含 `HDMI` 的设备；如果没有 HDMI，则使用检测到的第一个 ALSA 播放设备；如果没有检测到任何设备，回退到 `default`。
+程序会播放 TTS 生成的 `demo.pcm`。如果没有设置 `STW_AUDIO_DEVICE`，程序会调用 `aplay -l` 自动检测 HDMI/ALSA 播放设备，优先使用名称里包含 `HDMI` 的设备；如果没有 HDMI，则使用检测到的第一个 ALSA 播放设备；如果没有检测到任何设备，回退到 `default`。自动检测到的设备会使用 `plughw:X,Y` 形式，让 ALSA 帮忙做采样率和声道转换，比直接使用 `hw:X,Y` 更适合 HDMI 播放。
 
 可以查看开发板上的播放设备：
 
@@ -317,6 +317,18 @@ export STW_AUDIO_DEVICE=hw:0,0
 ```
 
 手动指定的 `STW_AUDIO_DEVICE` 优先级最高，会覆盖自动检测。
+
+如果 `aplay` 显示正在播放但 HDMI 没有声音，优先尝试 `plughw` 形式：
+
+```bash
+export STW_AUDIO_DEVICE=plughw:0,2
+```
+
+其中 `0,2` 要替换成 `aplay -l` 中实际看到的 card 和 device 编号。也可以直接测试生成的 TTS 文件：
+
+```bash
+aplay -D plughw:0,2 -f S16_LE -r 16000 -c 1 demo.pcm
+```
 
 如果只想验证 AI 描述和 TTS 文件生成，不想播放音频：
 
