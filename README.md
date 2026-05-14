@@ -279,6 +279,49 @@ sudo usermod -aG video "$USER"
 
 加入用户组后需要重新登录或重启终端会话。还要确认摄像头没有被浏览器、播放器、测试程序或其他进程占用。
 
+如果摄像头能打开但 AI 描述为黑图，通常是自动曝光还没稳定、设备曝光参数不兼容，或环境太暗。程序默认使用自动曝光并预热 20 帧，可以调整：
+
+```bash
+export STW_CAMERA_WARMUP_FRAMES=40
+export STW_CAMERA_SETTLE_MS=1000
+```
+
+如果需要手动曝光：
+
+```bash
+export STW_CAMERA_MANUAL_EXPOSURE=1
+./see_the_world 80
+```
+
+也可以调亮度：
+
+```bash
+export STW_CAMERA_BRIGHTNESS=80
+```
+
+程序会打印保存帧的平均亮度。如果平均亮度接近 0，说明保存的是黑帧，需要继续调整摄像头、光照或曝光参数。
+
+## 音频配置
+程序默认使用 ALSA 的 `default` 设备播放 TTS 生成的 `demo.pcm`。可以查看开发板上的播放设备：
+
+```bash
+aplay -l
+```
+
+如果需要指定设备：
+
+```bash
+export STW_AUDIO_DEVICE=hw:0,0
+```
+
+如果只想验证 AI 描述和 TTS 文件生成，不想播放音频：
+
+```bash
+export STW_SKIP_AUDIO=1
+```
+
+如果看到 `aplay: audio open error: No such file or directory`，说明 `STW_AUDIO_DEVICE` 指向的 ALSA 设备不存在，或者开发板没有暴露对应声卡设备。
+
 ## 开发模式：使用本地图片
 在 WSL 或没有摄像头的开发环境中，可以跳过摄像头采集，直接使用本地图片作为 AI 描述输入。把图片放在工程目录下，例如 `test.jpg`，然后执行：
 

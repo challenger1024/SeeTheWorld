@@ -60,6 +60,8 @@ void SeeTheWorld::processInput() {
         } else if (key == 'q' || key == 'Q') {
             cout << "👋 程序退出" << endl;
             this->running = false;
+        } else if (key == '\n' || key == '\r' || key == '\t') {
+            return;
         } else {
             cout << "❌ 无效输入，请按空格拍照或Q退出。" << endl;
         }

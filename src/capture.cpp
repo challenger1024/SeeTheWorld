@@ -3,6 +3,8 @@
 #include <cctype>
 #include <filesystem>
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include <string>
 #include"SeeTheWorld.h"
 
@@ -62,6 +64,40 @@ bool openConfiguredCamera(cv::VideoCapture& cap) {
     }
 
     return false;
+}
+
+bool envFlagEnabled(const char* name) {
+    const char* value = std::getenv(name);
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+
+int envIntOrDefault(const char* name, int defaultValue) {
+    const char* value = std::getenv(name);
+    if (!value || value[0] == '\0') {
+        return defaultValue;
+    }
+
+    try {
+        return std::stoi(value);
+    } catch (const std::exception&) {
+        std::cerr << "环境变量 " << name << " 不是整数，使用默认值 " << defaultValue << std::endl;
+        return defaultValue;
+    }
+}
+
+double frameMeanBrightness(const cv::Mat& frame) {
+    if (frame.empty()) {
+        return 0.0;
+    }
+
+    cv::Mat gray;
+    if (frame.channels() == 1) {
+        gray = frame;
+    } else {
+        cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    }
+
+    return cv::mean(gray)[0];
 }
 
 void printCameraTroubleshooting() {
@@ -132,31 +168,52 @@ bool SeeTheWorld::capture() {
     // 摄像头参数调整区
     // -------------------------
 
-    // 关闭自动曝光（注意：不同平台参数意义略有不同）
-    // 在大多数 UVC 摄像头上：
-    // 0.25 = 手动模式，0.75 = 自动模式
-    cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
+    const bool manualExposure = envFlagEnabled("STW_CAMERA_MANUAL_EXPOSURE");
+    const int warmupFrames = envIntOrDefault("STW_CAMERA_WARMUP_FRAMES", 20);
+    const int settleMs = envIntOrDefault("STW_CAMERA_SETTLE_MS", 500);
+    const int brightness = envIntOrDefault("STW_CAMERA_BRIGHTNESS", 50);
 
-    // 设置曝光值（负值代表短曝光，通常在 -5 到 -10 之间可用）
-    cap.set(cv::CAP_PROP_EXPOSURE, EXPOSURE);
+    if (manualExposure) {
+        // V4L2 cameras differ here: many UVC devices use 1 or 0.25 for manual mode.
+        cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
+        cap.set(cv::CAP_PROP_EXPOSURE, EXPOSURE);
+        std::cout << "摄像头手动曝光已启用，曝光值: " << EXPOSURE << std::endl;
+    } else {
+        // Default to auto exposure on boards, because fixed exposure often produces black frames.
+        cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 3);
+        std::cout << "摄像头使用自动曝光" << std::endl;
+    }
 
-    // 适当降低亮度和增益（这些值需要根据摄像头情况调试）
-    cap.set(cv::CAP_PROP_BRIGHTNESS, 50);
+    cap.set(cv::CAP_PROP_BRIGHTNESS, brightness);
 //    cap.set(cv::CAP_PROP_GAIN, 0.5);
 //    cap.set(cv::CAP_PROP_CONTRAST, 40);
 //    cap.set(cv::CAP_PROP_SATURATION, 50);//饱和度 50
 //    cap.set(cv::CAP_PROP_HUE, 50);//色调 50
 
-    // 等待相机稳定（有的摄像头需要几帧时间调整）
+    std::this_thread::sleep_for(std::chrono::milliseconds(settleMs));
+
+    // 等待相机稳定（有的摄像头需要较多帧完成自动曝光）
     cv::Mat frame;
-    for (int i = 0; i < 5; i++) {
-        cap >> frame;
+    double meanBrightness = 0.0;
+    for (int i = 0; i < warmupFrames; i++) {
+        if (!cap.read(frame)) {
+            continue;
+        }
+        meanBrightness = frameMeanBrightness(frame);
     }
 
     if (frame.empty()) {
         std::cerr << "拍照失败！" << std::endl;
         return false;
     }
+
+    meanBrightness = frameMeanBrightness(frame);
+    if (meanBrightness < 3.0) {
+        std::cerr << "警告：当前画面接近全黑，平均亮度 " << meanBrightness << std::endl;
+        std::cerr << "可尝试增加预热帧：export STW_CAMERA_WARMUP_FRAMES=40" << std::endl;
+        std::cerr << "或启用手动曝光：export STW_CAMERA_MANUAL_EXPOSURE=1 后调整 ./see_the_world [曝光值]" << std::endl;
+    }
+
     std::cout<<"修改后"<<std::endl;
     std::cout << "=== 当前摄像头参数 ===" << std::endl;
     std::cout << "亮度 (Brightness)        : " << cap.get(cv::CAP_PROP_BRIGHTNESS) << std::endl;
@@ -167,6 +224,7 @@ bool SeeTheWorld::capture() {
     std::cout << "曝光 (Exposure)         : " << cap.get(cv::CAP_PROP_EXPOSURE) << std::endl;
     std::cout << "自动曝光 (Auto Exposure): " << cap.get(cv::CAP_PROP_AUTO_EXPOSURE) << std::endl;
     std::cout << "焦距 (Focus)            : " << cap.get(cv::CAP_PROP_FOCUS) << std::endl;
+    std::cout << "平均亮度                : " << meanBrightness << std::endl;
 
     cv::imwrite(kCapturedImagePath, frame);
     std::cout << "已保存图像 " << kCapturedImagePath << std::endl;
