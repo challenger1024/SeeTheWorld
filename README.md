@@ -48,6 +48,21 @@ Makefile 会通过 `pkg-config` 自动读取 `opencv4`、`libcurl` 和 `openssl`
 
 这样可以避免 `pkg-config --libs opencv4` 拉入 `opencv_hdf`、`gdal` 等大量无关模块，减少 RISC-V 开发板上间接依赖库缺失导致的链接错误。
 
+某些开发板上的 `libopencv_imgcodecs` 仍可能间接依赖 `libgdal.so`。如果链接阶段看到类似：
+
+```text
+libgdal.so.34: undefined reference to `SDselect'
+libarmadillo.so.11 ... not found
+```
+
+Makefile 在 RISC-V 开发板上默认会加入：
+
+```bash
+-Wl,--allow-shlib-undefined
+```
+
+这样不会因为 OpenCV/GDAL 的可选间接依赖阻塞本项目链接。项目本身不直接使用 GDAL。如果运行时仍然提示缺少 GDAL 相关动态库，再安装对应运行库，或关闭/替换系统 OpenCV 的 GDAL 支持。
+
 如果使用 PLCT 工具链时仍然提示找不到系统头文件，例如 `curl/curl.h` 或 `openssl/hmac.h`，Makefile 会在 RISC-V 开发板上额外加入这些默认路径：
 
 ```bash
