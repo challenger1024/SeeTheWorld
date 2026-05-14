@@ -14,3 +14,8 @@ see_the_world-riscv64
 image.jpg
 demo.pcm
 test.jpg
+
+# Local logs / accidental command output
+log.txt
+log.txtgit
+add

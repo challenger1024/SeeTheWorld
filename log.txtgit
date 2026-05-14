@@ -1,9 +1,0 @@
-make ARCH=riscv CXX="/home/moses/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++" SYSROOT=""
-make[1]: Entering directory '/home/moses/SeeTheWorld'
-mkdir -p build/riscv64
-Compiling src/capture.cpp ...
-/home/moses/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++  -I/usr/include/opencv4 -I/usr/include/x86_64-linux-gnu -std=c++17 -Wall -Wextra -march=rv64gc -mabi=lp64d -misa-spec=2.2 -mno-riscv-attribute -mno-relax -Wa,-march=rv64imafdc -MMD -MP -c src/capture.cpp -o build/riscv64/capture.o
-make[1]: /home/moses/tjc/venv-gnu-plct/bin/riscv64-plct-linux-gnu-g++: No such file or directory
-make[1]: *** [makefile:108: build/riscv64/capture.o] Error 127
-make[1]: Leaving directory '/home/moses/SeeTheWorld'
-make: *** [makefile:89: riscv] Error 2
