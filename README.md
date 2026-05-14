@@ -302,7 +302,7 @@ export STW_CAMERA_BRIGHTNESS=80
 程序会打印保存帧的平均亮度。如果平均亮度接近 0，说明保存的是黑帧，需要继续调整摄像头、光照或曝光参数。
 
 ## 音频配置
-程序会播放 TTS 生成的 `demo.pcm`。如果没有设置 `STW_AUDIO_DEVICE`，程序会调用 `aplay -l` 自动检测 HDMI/ALSA 播放设备，优先使用名称里包含 `HDMI` 的设备；如果没有 HDMI，则使用检测到的第一个 ALSA 播放设备；如果没有检测到任何设备，回退到 `default`。自动检测到的设备会使用 `plughw:X,Y` 形式，让 ALSA 帮忙做采样率和声道转换，比直接使用 `hw:X,Y` 更适合 HDMI 播放。
+程序会播放 TTS 生成的 `demo.pcm`。如果没有设置 `STW_AUDIO_DEVICE`，程序会调用 `aplay -l` 自动检测 ALSA 播放设备。无论设备是 3.5mm 耳机/音响输出，还是 HDMI 音频输出，只要系统能检测到，程序都会使用 `plughw:X,Y` 形式按顺序尝试；当前设备播放失败时，会自动尝试下一个设备。如果没有检测到任何设备，回退到 `default`。
 
 可以查看开发板上的播放设备：
 
@@ -318,7 +318,7 @@ export STW_AUDIO_DEVICE=hw:0,0
 
 手动指定的 `STW_AUDIO_DEVICE` 优先级最高，会覆盖自动检测。
 
-如果 `aplay` 显示正在播放但 HDMI 没有声音，优先尝试 `plughw` 形式：
+如果 `aplay` 显示正在播放但没有声音，优先尝试 `plughw` 形式：
 
 ```bash
 export STW_AUDIO_DEVICE=plughw:0,2
@@ -337,6 +337,20 @@ export STW_SKIP_AUDIO=1
 ```
 
 如果看到 `aplay: audio open error: No such file or directory`，说明 `STW_AUDIO_DEVICE` 指向的 ALSA 设备不存在，或者开发板没有暴露对应声卡设备。
+
+如果看到 `aplay: pcm_write ... Input/output error`，说明设备能打开，但写入音频数据失败。常见原因是选中的设备没有真实音频输出、HDMI 显示器不支持或没有打开声音、3.5mm 音频口没有连接可用设备，或者当前设备编号不是实际出声的接口。先用 `aplay -l` 查看所有设备，再逐个测试：
+
+```bash
+aplay -D plughw:0,0 -f S16_LE -r 16000 -c 1 demo.pcm
+aplay -D plughw:0,1 -f S16_LE -r 16000 -c 1 demo.pcm
+aplay -D plughw:0,2 -f S16_LE -r 16000 -c 1 demo.pcm
+```
+
+找到能出声的设备后固定下来：
+
+```bash
+export STW_AUDIO_DEVICE=plughw:0,0
+```
 
 ## 开发模式：使用本地图片
 在 WSL 或没有摄像头的开发环境中，可以跳过摄像头采集，直接使用本地图片作为 AI 描述输入。把图片放在工程目录下，例如 `test.jpg`，然后执行：

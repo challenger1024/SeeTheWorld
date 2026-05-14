@@ -8,6 +8,7 @@
 #include <string>
 #include <regex>
 #include <array>
+#include <vector>
 #include"SeeTheWorld.h"
 #include"tts_ws_client.h"
 
@@ -34,16 +35,16 @@ bool enterPressed() {
     return ch == '\n' || ch == '\r';
 }
 
-std::string detectHdmiAudioDevice() {
+std::vector<std::string> detectAudioDevices() {
     FILE* pipe = popen("aplay -l 2>/dev/null", "r");
     if (!pipe) {
-        return "";
+        return {};
     }
 
     std::array<char, 512> buffer{};
     std::regex devicePattern(R"(card ([0-9]+):.*device ([0-9]+):)", std::regex::icase);
     std::smatch match;
-    std::string fallbackDevice;
+    std::vector<std::string> devices;
 
     while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe)) {
         std::string line(buffer.data());
@@ -52,18 +53,57 @@ std::string detectHdmiAudioDevice() {
         }
 
         std::string device = "plughw:" + match[1].str() + "," + match[2].str();
-        if (fallbackDevice.empty()) {
-            fallbackDevice = device;
-        }
-
-        if (line.find("HDMI") != std::string::npos || line.find("hdmi") != std::string::npos) {
-            pclose(pipe);
-            return device;
-        }
+        devices.push_back(device);
     }
 
     pclose(pipe);
-    return fallbackDevice;
+    return devices;
+}
+
+int playPcmWithAplay(const std::string& audioDevice) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execlp("aplay", "aplay", "-D", audioDevice.c_str(), "-f", "S16_LE", "-r", "16000", "-c", "1", "demo.pcm", (char*)NULL);
+        _exit(127);
+    }
+
+    if (pid < 0) {
+        std::cerr << "启动 aplay 失败。" << std::endl;
+        return 1;
+    }
+
+    std::cout << "播放中，设备 " << audioDevice << "，按回车停止..." << std::endl;
+    int status = 0;
+
+    while (true) {
+        pid_t finished = waitpid(pid, &status, WNOHANG);
+        if (finished == pid) {
+            break;
+        }
+
+        if (finished == -1) {
+            std::cerr << "等待播放进程失败。" << std::endl;
+            return 1;
+        }
+
+        if (enterPressed()) {
+            kill(pid, SIGTERM);
+            waitpid(pid, &status, 0);
+            std::cout << "播放已中止。" << std::endl;
+            return -1;
+        }
+    }
+
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    }
+
+    if (WIFSIGNALED(status)) {
+        std::cerr << "播放进程被信号中止: " << WTERMSIG(status) << std::endl;
+        return 1;
+    }
+
+    return 1;
 }
 }
 
@@ -75,55 +115,43 @@ void SeeTheWorld::speak(const std::string& text) {
         return;
     }
 
-    std::string audioDevice;
+    std::vector<std::string> audioDevices;
     const char* configuredAudioDevice = std::getenv("STW_AUDIO_DEVICE");
     if (configuredAudioDevice && configuredAudioDevice[0] != '\0') {
-        audioDevice = configuredAudioDevice;
+        audioDevices.push_back(configuredAudioDevice);
     } else {
-        audioDevice = detectHdmiAudioDevice();
-        if (!audioDevice.empty()) {
-            std::cout << "自动检测到音频设备: " << audioDevice << std::endl;
+        audioDevices = detectAudioDevices();
+        if (!audioDevices.empty()) {
+            std::cout << "自动检测到音频设备: ";
+            for (size_t i = 0; i < audioDevices.size(); ++i) {
+                if (i > 0) {
+                    std::cout << ", ";
+                }
+                std::cout << audioDevices[i];
+            }
+            std::cout << std::endl;
         } else {
-            audioDevice = "default";
-            std::cout << "未检测到 HDMI/ALSA 设备，使用 default。" << std::endl;
+            audioDevices.push_back("default");
+            std::cout << "未检测到 ALSA 播放设备，使用 default。" << std::endl;
         }
     }
 
-    pid_t pid = fork();
-    if (pid == 0) {
-        // 子进程执行 aplay
-        execlp("aplay", "aplay", "-D", audioDevice.c_str(), "-f", "S16_LE", "-r", "16000", "-c", "1", "demo.pcm", (char*)NULL);
-        _exit(1);
-    } else {
-        std::cout << "播放中，设备 " << audioDevice << "，按回车停止..." << std::endl;
-        bool stoppedByUser = false;
-        int status = 0;
-
-        while (true) {
-            pid_t finished = waitpid(pid, &status, WNOHANG);
-            if (finished == pid) {
-                break;
-            }
-
-            if (finished == -1) {
-                std::cerr << "等待播放进程失败。" << std::endl;
-                break;
-            }
-
-            if (enterPressed()) {
-                kill(pid, SIGTERM);
-                waitpid(pid, &status, 0);
-                stoppedByUser = true;
-                break;
-            }
-        }
-
-        if (stoppedByUser) {
-            std::cout << "播放已中止。" << std::endl;
-        } else if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-            std::cerr << "播放失败，aplay 退出码: " << WEXITSTATUS(status) << std::endl;
-        } else {
+    for (size_t i = 0; i < audioDevices.size(); ++i) {
+        int result = playPcmWithAplay(audioDevices[i]);
+        if (result == 0) {
             std::cout << "播放完成。" << std::endl;
+            return;
+        }
+
+        if (result < 0) {
+            return;
+        }
+
+        std::cerr << "播放失败，设备 " << audioDevices[i] << "，aplay 退出码: " << result << std::endl;
+        if (i + 1 < audioDevices.size()) {
+            std::cout << "尝试下一个音频设备..." << std::endl;
         }
     }
+
+    std::cerr << "所有检测到的音频设备都播放失败，请使用 STW_AUDIO_DEVICE 手动指定可用设备。" << std::endl;
 }
