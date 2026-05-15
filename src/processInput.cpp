@@ -50,15 +50,13 @@ void SeeTheWorld::processInput() {
     if (kbhit()) {
         char key = getch();
         if (key == ' ') { // 空格键拍照
-            cout << "📸 拍照触发" << endl;
             if(this->capture()){
                 this->send_image();
-                std::cout<<"按下空格键拍照"<<std::endl;
+                std::cout<<"按下空格键拍照，按 Q 退出。"<<std::endl;
                 return;
             }
             
         } else if (key == 'q' || key == 'Q') {
-            cout << "👋 程序退出" << endl;
             this->running = false;
         } else if (key == '\n' || key == '\r' || key == '\t') {
             return;

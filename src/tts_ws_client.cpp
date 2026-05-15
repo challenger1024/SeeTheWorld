@@ -29,6 +29,13 @@ typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
 
 static std::mutex file_mutex;
 
+namespace {
+bool debugOutputEnabled() {
+    const char* value = std::getenv("STW_DEBUG");
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+}
+
 //
 // Helper: RFC1123 formatted date (GMT)
 //
@@ -316,7 +323,9 @@ int tts_speak(const std::string &text) {
         });
 
         c.set_close_handler([&](connection_hdl) {
-            std::cout << "Connection closed by server" << std::endl;
+            if (debugOutputEnabled()) {
+                std::cout << "Connection closed by server" << std::endl;
+            }
         });
 
         websocketpp::lib::error_code ec;
@@ -335,6 +344,8 @@ int tts_speak(const std::string &text) {
         return -1;
     }
 
-    std::cout << "Finished. Output saved to demo.pcm" << std::endl;
+    if (debugOutputEnabled()) {
+        std::cout << "Finished. Output saved to demo.pcm" << std::endl;
+    }
     return 0;
 }

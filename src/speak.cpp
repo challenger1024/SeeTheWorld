@@ -9,10 +9,16 @@
 #include <regex>
 #include <array>
 #include <vector>
+#include <fcntl.h>
 #include"SeeTheWorld.h"
 #include"tts_ws_client.h"
 
 namespace {
+bool debugOutputEnabled() {
+    const char* value = std::getenv("STW_DEBUG");
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+
 bool enterPressed() {
     fd_set readfds;
     FD_ZERO(&readfds);
@@ -60,9 +66,17 @@ std::vector<std::string> detectAudioDevices() {
     return devices;
 }
 
-int playPcmWithAplay(const std::string& audioDevice) {
+int playPcmWithAplay(const std::string& audioDevice, bool debugOutput) {
     pid_t pid = fork();
     if (pid == 0) {
+        if (!debugOutput) {
+            int nullFd = open("/dev/null", O_WRONLY);
+            if (nullFd >= 0) {
+                dup2(nullFd, STDOUT_FILENO);
+                dup2(nullFd, STDERR_FILENO);
+                close(nullFd);
+            }
+        }
         execlp("aplay", "aplay", "-D", audioDevice.c_str(), "-f", "S16_LE", "-r", "16000", "-c", "1", "demo.pcm", (char*)NULL);
         _exit(127);
     }
@@ -72,7 +86,11 @@ int playPcmWithAplay(const std::string& audioDevice) {
         return 1;
     }
 
-    std::cout << "播放中，设备 " << audioDevice << "，按回车停止..." << std::endl;
+    if (debugOutput) {
+        std::cout << "开始播放，设备 " << audioDevice << "，按回车停止。" << std::endl;
+    } else {
+        std::cout << "开始播放，按回车停止。" << std::endl;
+    }
     int status = 0;
 
     while (true) {
@@ -108,10 +126,16 @@ int playPcmWithAplay(const std::string& audioDevice) {
 }
 
 void SeeTheWorld::speak(const std::string& text) {
-    tts_speak(text);
+    if (tts_speak(text) != 0) {
+        return;
+    }
+
+    const bool debugOutput = debugOutputEnabled();
     const char* skipAudio = std::getenv("STW_SKIP_AUDIO");
     if (skipAudio && skipAudio[0] != '\0' && std::string(skipAudio) != "0") {
-        std::cout << "已生成 demo.pcm，跳过音频播放。" << std::endl;
+        if (debugOutput) {
+            std::cout << "已生成 demo.pcm，跳过音频播放。" << std::endl;
+        }
         return;
     }
 
@@ -122,24 +146,30 @@ void SeeTheWorld::speak(const std::string& text) {
     } else {
         audioDevices = detectAudioDevices();
         if (!audioDevices.empty()) {
-            std::cout << "自动检测到音频设备: ";
-            for (size_t i = 0; i < audioDevices.size(); ++i) {
-                if (i > 0) {
-                    std::cout << ", ";
+            if (debugOutput) {
+                std::cout << "自动检测到音频设备: ";
+                for (size_t i = 0; i < audioDevices.size(); ++i) {
+                    if (i > 0) {
+                        std::cout << ", ";
+                    }
+                    std::cout << audioDevices[i];
                 }
-                std::cout << audioDevices[i];
+                std::cout << std::endl;
             }
-            std::cout << std::endl;
         } else {
             audioDevices.push_back("default");
-            std::cout << "未检测到 ALSA 播放设备，使用 default。" << std::endl;
+            if (debugOutput) {
+                std::cout << "未检测到 ALSA 播放设备，使用 default。" << std::endl;
+            }
         }
     }
 
     for (size_t i = 0; i < audioDevices.size(); ++i) {
-        int result = playPcmWithAplay(audioDevices[i]);
+        int result = playPcmWithAplay(audioDevices[i], debugOutput);
         if (result == 0) {
-            std::cout << "播放完成。" << std::endl;
+            if (debugOutput) {
+                std::cout << "播放完成。" << std::endl;
+            }
             return;
         }
 
@@ -147,9 +177,13 @@ void SeeTheWorld::speak(const std::string& text) {
             return;
         }
 
-        std::cerr << "播放失败，设备 " << audioDevices[i] << "，aplay 退出码: " << result << std::endl;
+        if (debugOutput) {
+            std::cerr << "播放失败，设备 " << audioDevices[i] << "，aplay 退出码: " << result << std::endl;
+        }
         if (i + 1 < audioDevices.size()) {
-            std::cout << "尝试下一个音频设备..." << std::endl;
+            if (debugOutput) {
+                std::cout << "尝试下一个音频设备..." << std::endl;
+            }
         }
     }
 

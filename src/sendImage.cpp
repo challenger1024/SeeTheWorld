@@ -7,6 +7,13 @@
 #include <cstring>
 #include "SeeTheWorld.h"
 
+namespace {
+bool debugOutputEnabled() {
+    const char* value = std::getenv("STW_DEBUG");
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+}
+
 // 在 response 中筛选出 AI 的回答
 std::string extractAIResponse(const std::string& response) {
     // 查找 "content":" 的起始位置
@@ -131,7 +138,9 @@ int SeeTheWorld::send_image(){
         } else {
 //            std::cout << "Response:\n" << response << std::endl;
             std::string answer = extractAIResponse(response);
-            std::cout << "\nAI的描述:\n" << answer << std::endl;
+            if (debugOutputEnabled()) {
+                std::cout << "\nAI的描述:\n" << answer << std::endl;
+            }
             this->speak(answer);
         }
 

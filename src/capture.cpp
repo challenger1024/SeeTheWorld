@@ -38,10 +38,21 @@ bool openCameraSource(cv::VideoCapture& cap, const std::string& source, int back
     return cap.open(source, backend);
 }
 
+bool envFlagEnabled(const char* name) {
+    const char* value = std::getenv(name);
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+
+bool debugOutputEnabled() {
+    return envFlagEnabled("STW_DEBUG");
+}
+
 bool openConfiguredCamera(cv::VideoCapture& cap) {
     const char* configured = std::getenv("STW_CAMERA_DEVICE");
     if (configured && configured[0] != '\0') {
-        std::cout << "尝试打开摄像头: " << configured << std::endl;
+        if (debugOutputEnabled()) {
+            std::cout << "尝试打开摄像头: " << configured << std::endl;
+        }
         if (openCameraSource(cap, configured, cv::CAP_V4L2)) {
             return true;
         }
@@ -52,23 +63,22 @@ bool openConfiguredCamera(cv::VideoCapture& cap) {
 
     for (int index = 0; index <= 5; ++index) {
         if (cap.open(index, cv::CAP_V4L2)) {
-            std::cout << "已打开摄像头 /dev/video" << index << std::endl;
+            if (debugOutputEnabled()) {
+                std::cout << "已打开摄像头 /dev/video" << index << std::endl;
+            }
             return true;
         }
         cap.release();
     }
 
     if (cap.open(0, cv::CAP_ANY)) {
-        std::cout << "已使用 OpenCV 默认后端打开摄像头 0" << std::endl;
+        if (debugOutputEnabled()) {
+            std::cout << "已使用 OpenCV 默认后端打开摄像头 0" << std::endl;
+        }
         return true;
     }
 
     return false;
-}
-
-bool envFlagEnabled(const char* name) {
-    const char* value = std::getenv(name);
-    return value && value[0] != '\0' && std::string(value) != "0";
 }
 
 int envIntOrDefault(const char* name, int defaultValue) {
@@ -133,8 +143,10 @@ bool useImageFileForDevelopment() {
         return false;
     }
 
-    std::cout << "开发模式：已使用 " << source << " 作为输入图片" << std::endl;
-    std::cout << "已保存图像 " << kCapturedImagePath << std::endl;
+    if (debugOutputEnabled()) {
+        std::cout << "开发模式：已使用 " << source << " 作为输入图片" << std::endl;
+    }
+    std::cout << "图像已保存，请等待。" << std::endl;
     return true;
 }
 }
@@ -177,11 +189,15 @@ bool SeeTheWorld::capture() {
         // V4L2 cameras differ here: many UVC devices use 1 or 0.25 for manual mode.
         cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
         cap.set(cv::CAP_PROP_EXPOSURE, EXPOSURE);
-        std::cout << "摄像头手动曝光已启用，曝光值: " << EXPOSURE << std::endl;
+        if (debugOutputEnabled()) {
+            std::cout << "摄像头手动曝光已启用，曝光值: " << EXPOSURE << std::endl;
+        }
     } else {
         // Default to auto exposure on boards, because fixed exposure often produces black frames.
         cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 3);
-        std::cout << "摄像头使用自动曝光" << std::endl;
+        if (debugOutputEnabled()) {
+            std::cout << "摄像头使用自动曝光" << std::endl;
+        }
     }
 
     cap.set(cv::CAP_PROP_BRIGHTNESS, brightness);
@@ -208,26 +224,27 @@ bool SeeTheWorld::capture() {
     }
 
     meanBrightness = frameMeanBrightness(frame);
-    if (meanBrightness < 3.0) {
+    if (debugOutputEnabled() && meanBrightness < 3.0) {
         std::cerr << "警告：当前画面接近全黑，平均亮度 " << meanBrightness << std::endl;
         std::cerr << "可尝试增加预热帧：export STW_CAMERA_WARMUP_FRAMES=40" << std::endl;
         std::cerr << "或启用手动曝光：export STW_CAMERA_MANUAL_EXPOSURE=1 后调整 ./see_the_world [曝光值]" << std::endl;
     }
 
-    std::cout<<"修改后"<<std::endl;
-    std::cout << "=== 当前摄像头参数 ===" << std::endl;
-    std::cout << "亮度 (Brightness)        : " << cap.get(cv::CAP_PROP_BRIGHTNESS) << std::endl;
-    std::cout << "对比度 (Contrast)       : " << cap.get(cv::CAP_PROP_CONTRAST) << std::endl;
-    std::cout << "饱和度 (Saturation)     : " << cap.get(cv::CAP_PROP_SATURATION) << std::endl;
-    std::cout << "色调 (Hue)             : " << cap.get(cv::CAP_PROP_HUE) << std::endl;
-    std::cout << "增益 (Gain)             : " << cap.get(cv::CAP_PROP_GAIN) << std::endl;
-    std::cout << "曝光 (Exposure)         : " << cap.get(cv::CAP_PROP_EXPOSURE) << std::endl;
-    std::cout << "自动曝光 (Auto Exposure): " << cap.get(cv::CAP_PROP_AUTO_EXPOSURE) << std::endl;
-    std::cout << "焦距 (Focus)            : " << cap.get(cv::CAP_PROP_FOCUS) << std::endl;
-    std::cout << "平均亮度                : " << meanBrightness << std::endl;
+    if (debugOutputEnabled()) {
+        std::cout << "=== 当前摄像头参数 ===" << std::endl;
+        std::cout << "亮度 (Brightness)        : " << cap.get(cv::CAP_PROP_BRIGHTNESS) << std::endl;
+        std::cout << "对比度 (Contrast)       : " << cap.get(cv::CAP_PROP_CONTRAST) << std::endl;
+        std::cout << "饱和度 (Saturation)     : " << cap.get(cv::CAP_PROP_SATURATION) << std::endl;
+        std::cout << "色调 (Hue)             : " << cap.get(cv::CAP_PROP_HUE) << std::endl;
+        std::cout << "增益 (Gain)             : " << cap.get(cv::CAP_PROP_GAIN) << std::endl;
+        std::cout << "曝光 (Exposure)         : " << cap.get(cv::CAP_PROP_EXPOSURE) << std::endl;
+        std::cout << "自动曝光 (Auto Exposure): " << cap.get(cv::CAP_PROP_AUTO_EXPOSURE) << std::endl;
+        std::cout << "焦距 (Focus)            : " << cap.get(cv::CAP_PROP_FOCUS) << std::endl;
+        std::cout << "平均亮度                : " << meanBrightness << std::endl;
+    }
 
     cv::imwrite(kCapturedImagePath, frame);
-    std::cout << "已保存图像 " << kCapturedImagePath << std::endl;
+    std::cout << "图像已保存，请等待。" << std::endl;
 //    this->send_image();
     return true;
 }
