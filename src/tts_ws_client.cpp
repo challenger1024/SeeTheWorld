@@ -32,6 +32,11 @@ static std::mutex file_mutex;
 const char* kTtsHost = "tts-api.xfyun.cn";
 const char* kTtsPath = "/v2/tts";
 
+bool debugOutputEnabled() {
+    const char* value = std::getenv("STW_DEBUG");
+    return value && value[0] != '\0' && std::string(value) != "0";
+}
+
 //
 // Helper: RFC1123 formatted date (GMT)
 //
@@ -146,6 +151,16 @@ std::string create_url(const std::string &APPID,
 
     // HMAC-SHA256 then base64
     std::string signature_sha = hmac_sha256_base64(APISecret, signature_origin);
+
+    if (debugOutputEnabled()) {
+        std::cout << "TTS鉴权自检: host=" << kTtsHost
+                  << ", path=" << kTtsPath
+                  << ", date=\"" << date << "\""
+                  << ", api_key长度=" << APIKey.size()
+                  << ", api_secret长度=" << APISecret.size()
+                  << ", signature长度=" << signature_sha.size()
+                  << std::endl;
+    }
 
     // authorization_origin = api_key="...", algorithm="hmac-sha256", headers="host date request-line", signature="..."
     std::ostringstream auth_ori;
