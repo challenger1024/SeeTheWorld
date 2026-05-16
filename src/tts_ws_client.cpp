@@ -226,8 +226,15 @@ int tts_speak(const std::string &text) {
 
     client c;
     std::string out_filename = "demo.pcm";
+    bool receivedAudio = false;
+    bool requestFailed = false;
 
     try {
+        {
+            std::lock_guard<std::mutex> lock(file_mutex);
+            std::remove(out_filename.c_str());
+        }
+
         c.clear_access_channels(websocketpp::log::alevel::all);
         c.clear_error_channels(websocketpp::log::elevel::all);
 
@@ -267,8 +274,12 @@ int tts_speak(const std::string &text) {
                             std::ofstream ofs(out_filename, std::ios::binary | std::ios::app);
                             if (!ofs) {
                                 std::cerr << "Failed to open output file\n";
+                                requestFailed = true;
                             } else {
                                 ofs.write(audio_bin.data(), (std::streamsize)audio_bin.size());
+                                if (!audio_bin.empty()) {
+                                    receivedAudio = true;
+                                }
                             }
                         }
                     }
@@ -279,6 +290,7 @@ int tts_speak(const std::string &text) {
                     if (code != 0) {
                         std::string errMsg = j.value("message", std::string("unknown"));
                         std::cerr << "sid:" << sid << " call error:" << errMsg << " code is:" << code << std::endl;
+                        requestFailed = true;
                     } else {
 //                        std::cout << "Received chunk, status=" << status << std::endl;
                     }
@@ -304,22 +316,19 @@ int tts_speak(const std::string &text) {
             d["data"] = json::parse(wsParam.data_json());
 
             std::string payload = d.dump();
-            {
-                std::lock_guard<std::mutex> lock(file_mutex);
-                // remove existing file if present
-                std::remove(out_filename.c_str());
-            }
             websocketpp::lib::error_code ec;
             c.send(hdl, payload, websocketpp::frame::opcode::text, ec);
             if (ec) {
                 std::cerr << "Send failed: " << ec.message() << std::endl;
+                requestFailed = true;
             } else {
 //                std::cout << "Sent synthesis request." << std::endl;
             }
         });
 
         c.set_fail_handler([&](connection_hdl) {
-//            std::cout << "Connection failed" << std::endl;
+            std::cerr << "TTS connection failed" << std::endl;
+            requestFailed = true;
         });
 
         c.set_close_handler([&](connection_hdl) {
@@ -341,6 +350,11 @@ int tts_speak(const std::string &text) {
 
     } catch (const std::exception &e) {
         std::cerr << "Exception: " << e.what() << std::endl;
+        return -1;
+    }
+
+    if (requestFailed || !receivedAudio) {
+        std::cerr << "TTS 未生成新的音频，跳过播放。" << std::endl;
         return -1;
     }
 
