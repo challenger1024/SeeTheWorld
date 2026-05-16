@@ -9,6 +9,7 @@
 #include <regex>
 #include <array>
 #include <vector>
+#include <filesystem>
 #include"SeeTheWorld.h"
 #include"tts_ws_client.h"
 
@@ -108,7 +109,14 @@ int playPcmWithAplay(const std::string& audioDevice) {
 }
 
 void SeeTheWorld::speak(const std::string& text) {
-    tts_speak(text);
+    if (tts_speak(text) != 0) {
+        return;
+    }
+    if (!std::filesystem::exists("demo.pcm") || std::filesystem::file_size("demo.pcm") == 0) {
+        std::cerr << "TTS 未生成 demo.pcm，跳过播放。" << std::endl;
+        return;
+    }
+
     const char* skipAudio = std::getenv("STW_SKIP_AUDIO");
     if (skipAudio && skipAudio[0] != '\0' && std::string(skipAudio) != "0") {
         std::cout << "已生成 demo.pcm，跳过音频播放。" << std::endl;
