@@ -368,14 +368,15 @@ export STW_AUDIO_DEVICE=plughw:0,0
 在 WSL 或没有摄像头的开发环境中，可以跳过摄像头采集，直接使用本地图片作为 AI 描述输入。把图片放在工程目录下，例如 `test.jpg`，然后执行：
 
 ```bash
+export STW_DEV_IMAGE_MODE=1
 export STW_IMAGE_FILE=test.jpg
 ./see_the_world
 ```
 
-设置 `STW_IMAGE_FILE` 后，程序按空格触发时不会打开摄像头，而是读取指定图片并保存为后续流程使用的 `image.jpg`，然后继续发送给 AI 进行描述。
+默认情况下程序会打开摄像头正常拍照。只有设置 `STW_DEV_IMAGE_MODE=1` 后，程序按空格触发时才不会打开摄像头，而是读取 `STW_IMAGE_FILE` 指定的图片并保存为后续流程使用的 `image.jpg`，然后继续发送给 AI 进行描述。
 
 恢复真实摄像头模式：
 
 ```bash
-unset STW_IMAGE_FILE
+unset STW_DEV_IMAGE_MODE
 ```

@@ -47,6 +47,10 @@ bool debugOutputEnabled() {
     return envFlagEnabled("STW_DEBUG");
 }
 
+bool developmentImageModeEnabled() {
+    return envFlagEnabled("STW_DEV_IMAGE_MODE");
+}
+
 bool openConfiguredCamera(cv::VideoCapture& cap) {
     const char* configured = std::getenv("STW_CAMERA_DEVICE");
     if (configured && configured[0] != '\0') {
@@ -143,17 +147,16 @@ bool useImageFileForDevelopment() {
         return false;
     }
 
-    if (debugOutputEnabled()) {
-        std::cout << "开发模式：已使用 " << source << " 作为输入图片" << std::endl;
-    }
+    std::cout << "开发模式：STW_DEV_IMAGE_MODE 已启用，未打开摄像头，正在使用 "
+              << source << " 作为输入图片。" << std::endl;
+    std::cout << "如需恢复真实拍照，请先执行：unset STW_DEV_IMAGE_MODE" << std::endl;
     std::cout << "图像已保存，请等待。" << std::endl;
     return true;
 }
 }
 
 bool SeeTheWorld::capture() {
-    const char* imageFile = std::getenv("STW_IMAGE_FILE");
-    if (imageFile && imageFile[0] != '\0') {
+    if (developmentImageModeEnabled()) {
         return useImageFileForDevelopment();
     }
 
