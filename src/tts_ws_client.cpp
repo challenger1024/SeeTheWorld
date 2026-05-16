@@ -30,6 +30,9 @@ typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
 static std::mutex file_mutex;
 
 namespace {
+const char* kTtsHost = "tts-api.xfyun.cn";
+const char* kTtsPath = "/v2/tts";
+
 bool debugOutputEnabled() {
     const char* value = std::getenv("STW_DEBUG");
     return value && value[0] != '\0' && std::string(value) != "0";
@@ -137,16 +140,15 @@ std::string hmac_sha256_base64(const std::string &key, const std::string &data) 
 //
 // Build the signed URL following the Python demo logic
 //
-std::string create_url(const std::string &APPID,
-                       const std::string &APIKey,
+std::string create_url(const std::string &APIKey,
                        const std::string &APISecret) {
-    std::string base = "wss://tts-api.xfyun.cn/v2/tts";
+    std::string base = std::string("wss://") + kTtsHost + kTtsPath;
     std::string date = rfc1123_date_now();
 
-    // signature_origin = "host: " + "ws-api.xfyun.cn" + "\n" + "date: " + date + "\n" + "GET " + "/v2/tts " + "HTTP/1.1"
-    std::string signature_origin = "host: ws-api.xfyun.cn\n";
+    // The signed host must match the actual request host.
+    std::string signature_origin = std::string("host: ") + kTtsHost + "\n";
     signature_origin += "date: " + date + "\n";
-    signature_origin += "GET /v2/tts HTTP/1.1";
+    signature_origin += std::string("GET ") + kTtsPath + " HTTP/1.1";
 
     // HMAC-SHA256 then base64
     std::string signature_sha = hmac_sha256_base64(APISecret, signature_origin);
@@ -156,11 +158,11 @@ std::string create_url(const std::string &APPID,
     auth_ori << "api_key=\"" << APIKey << "\", algorithm=\"hmac-sha256\", headers=\"host date request-line\", signature=\"" << signature_sha << "\"";
     std::string authorization = base64_encode(auth_ori.str());
 
-    // v = { "authorization": authorization, "date": date, "host": "ws-api.xfyun.cn" }
+    // v = { "authorization": authorization, "date": date, "host": "tts-api.xfyun.cn" }
     std::ostringstream qs;
     qs << "authorization=" << url_encode(authorization)
        << "&date=" << url_encode(date)
-       << "&host=" << url_encode(std::string("ws-api.xfyun.cn"));
+       << "&host=" << url_encode(std::string(kTtsHost));
 
     return base + "?" + qs.str();
 }
@@ -220,7 +222,7 @@ int tts_speak(const std::string &text) {
     wsParam.Text = text; // 若合成小语种，按Python注释使用UTF-16LE后 base64 编码
 
     // create url
-    std::string uri = create_url(wsParam.APPID, wsParam.APIKey, wsParam.APISecret);
+    std::string uri = create_url(wsParam.APIKey, wsParam.APISecret);
 
 //    std::cout << "Connecting to: " << uri << std::endl;
 
@@ -326,8 +328,18 @@ int tts_speak(const std::string &text) {
             }
         });
 
-        c.set_fail_handler([&](connection_hdl) {
-            std::cerr << "TTS connection failed" << std::endl;
+        c.set_fail_handler([&](connection_hdl hdl) {
+            websocketpp::lib::error_code lookupEc;
+            client::connection_ptr con = c.get_con_from_hdl(hdl, lookupEc);
+            std::cerr << "TTS connection failed";
+            if (!lookupEc && con) {
+                std::cerr << ": " << con->get_ec().message();
+                if (con->get_response_code() != 0) {
+                    std::cerr << "，HTTP " << con->get_response_code()
+                              << " " << con->get_response_msg();
+                }
+            }
+            std::cerr << std::endl;
             requestFailed = true;
         });
 
